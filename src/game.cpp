@@ -4,6 +4,7 @@
 uint8_t Launcher::aim;
 uint8_t Launcher::currentMarble;
 uint8_t Launcher::nextMarble;
+MarbleType Game::grid [GRIDWIDTH][GRIDHEIGHT];
 
 namespace {
   const Pos firingPos = {
@@ -21,9 +22,31 @@ void Game::init() {
   Launcher::nextMarble = Entities::createMarble(previewPos, Launcher::aim, random(MARBLETYPES));
   Launcher::currentMarble = Entities::createMarble(firingPos, Launcher::aim, random(MARBLETYPES));
   //init grid
+  for (uint8_t gx = 0; gx < GRIDWIDTH; gx++) {
+    for (uint8_t gy = 0; gy < GRIDHEIGHT; gy++) {
+      Game::grid[gx][gy] = None;
+    }
+  }
+  Game::grid[0][0] = Wings;
+  Game::grid[5][5] = Home;
 }
 
 void Game::challenge() {
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  #define startX SCREEN_WIDTH-5
+  #define startY 9
+
+  uint8_t gx;
+  uint8_t gy;
+
+  for (gx = 0; gx < GRIDWIDTH; gx++) {
+    for (gy = 0; gy < GRIDHEIGHT; gy++) {
+      //grid is 6px by 8px, alternating shift 4px down
+      if ((int) Game::grid[gx][gy] != None) 
+        sprites.drawExternalMask((startX-(gx*6))-4, ((startY+(gy*8))-4)+(4*(gx&1)), marbles, marbleMask+2, Game::grid[gx][gy], 0);
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //adjust launcher
   if (ab.pressed(DOWN_BUTTON) && (Launcher::aim>10)) Launcher::aim--;
@@ -35,14 +58,6 @@ void Game::challenge() {
     marbleMove(Launcher::currentMarble, firingPos);
     Launcher::nextMarble = Entities::createMarble(previewPos, Launcher::aim, random(MARBLETYPES));
   }
-
-  //uhhhhh cheat and change marble types
-  // if (ab.justPressed(A_BUTTON) && ((int) Launcher::next < MARBLETYPES-1)) {
-  //   Launcher::next = (MarbleType) ((int)Launcher::next)+1;
-  // }
-  // else if (ab.justPressed(B_BUTTON) && ((int) Launcher::next > 0)) {
-  //   Launcher::next = (MarbleType) ((int)Launcher::next)-1;
-  // }
 
   //draw the launcher
   #define LAUNCHER_LENGTH 16

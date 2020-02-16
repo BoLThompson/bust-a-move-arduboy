@@ -24,6 +24,7 @@ enum MarbleType {
   Spike,
   Waves,
   Home,
+  None,
 };
 
 #define MARBLETYPES 6

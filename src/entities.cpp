@@ -16,6 +16,8 @@ void Entities::step() {
   }
 }
 
+
+//FIXME: this doesn't properly handle the edge case where all entity slots are taken
 uint8_t Entities::createMarble(Pos pos, uint8_t aim, MarbleType type) {
   uint8_t firstAvailable = 0;
   while (entities[firstAvailable] != NULL) {
@@ -28,8 +30,7 @@ uint8_t Entities::createMarble(Pos pos, uint8_t aim, MarbleType type) {
   child->pos = pos;
   child->aim = aim;
   child->type = type;
-  child->waiting = true;
-  child->funcptr = marbleStep;
+  child->funcptr = marbleWait;
 
   entities[firstAvailable] = child;
 
